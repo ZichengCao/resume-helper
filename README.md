@@ -40,11 +40,11 @@ pip install -r requirements.txt
 效果如下，点击对应按钮，复制预设信息
 
 <div align=center>
-<img src="./images/1.png" width="80%">
+<img src="./images/1.png" width="50%">
 </div>
 
 <div align=center>
-<img src="./images/2.png" width="80%">
+<img src="./images/2.png" width="50%">
 </div>
 
 

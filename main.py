@@ -1,6 +1,8 @@
 import tkinter as tk
 import pyperclip
 import json
+import keyboard
+import atexit
 
 # 设置窗口大小和位置
 WINDOW_WIDTH = 400
@@ -8,6 +10,11 @@ WINDOW_HEIGHT = 800
 # 屏幕左上方为原点
 DISPLAY_X = 1000
 DISPLAY_Y = 50
+
+hot_keys = ['alt+1', 'alt+2', 'alt+3', 'alt+4', 'alt+5', 'alt+6', 'alt+q', 'alt+w', 'alt+r', 'alt+a', 'alt+s', 'alt+z',
+            'alt+x', 'alt+c', 'alt+shift+1', 'alt+shift+2', 'alt+shift+3', 'alt+shift+4', 'alt+shift+5']
+
+hot_keys_register = 0
 
 
 # 读取JSON文件
@@ -24,10 +31,20 @@ def read_json_file(file_path):
 # 复制指定的value值到剪贴板
 def copy_to_clipboard(value):
     pyperclip.copy(value)
+    keyboard.write(value)
+
+
+def finalize():
+    if hot_keys_register > 0:
+        keyboard.unhook_all_hotkeys()
 
 
 # 创建按钮来显示所有key值，每行显示两个按钮
 def create_buttons(data):
+    global hot_keys_register
+    if hot_keys_register > 0:
+        hot_keys_register = 0
+        keyboard.unhook_all_hotkeys()
     # 清除框架中的子部件
     for widget in frame.winfo_children():
         widget.destroy()
@@ -36,6 +53,8 @@ def create_buttons(data):
     col = 0
 
     for key, value in data.items():
+        if hot_keys_register < len(hot_keys):
+            key += '[' + hot_keys[hot_keys_register] + ']'
         if isinstance(value, dict):
             # 如果value是一个JSON对象，创建一个进入下一级的按钮
             button = tk.Button(frame, text=key, command=lambda v=value: create_buttons(v), width=20, height=2)
@@ -45,16 +64,19 @@ def create_buttons(data):
 
         button.grid(row=row, column=col, padx=10, pady=10)
         col += 1
-
         if col == 2:
             col = 0
             row += 1
+        if hot_keys_register < len(hot_keys):
+            keyboard.add_hotkey(hot_keys[hot_keys_register], button.invoke)
+        hot_keys_register += 1
 
     # 添加返回上一级的按钮
     if row > 0 or col > 0:
-        back_button = tk.Button(frame, text="返回上一级", command=lambda: create_buttons(resume_data), width=20,
+        back_button = tk.Button(frame, text="返回上一级[alt+0]", command=lambda: create_buttons(resume_data), width=20,
                                 height=2)
         back_button.grid(row=row, column=col, padx=10, pady=10)
+        keyboard.add_hotkey('alt+0', back_button.invoke)
 
 
 # 创建主窗口
@@ -86,6 +108,8 @@ canvas.create_window((0, 0), window=frame, anchor='nw')
 
 # 初始状态，显示顶层JSON对象的按钮
 create_buttons(resume_data)
+
+atexit.register(finalize)
 
 # 进入主循环
 root.mainloop()

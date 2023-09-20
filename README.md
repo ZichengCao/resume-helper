@@ -2,9 +2,12 @@
 
 使用 Python 自带的一个 GUI 库 Tkinter 实现的一个半自动化填简历助手 ，避免填写简历的时候需要不停切换页面复制、粘贴个人信息
 
+- 230920 添加快捷键支持
+  - 快捷键配置暂时是直接写在代码里的，因为既要单手按得过来，又要不被被浏览器响应的快捷键没那么多，也许会有更好的方案替代
+
 ## 环境
 
-Windows + Python 3.9.10（macOS 未测，但应该是通用的）
+Windows + Python 3.9.10（macOS 未测）
 
 ```
 pip install -r requirements.txt
